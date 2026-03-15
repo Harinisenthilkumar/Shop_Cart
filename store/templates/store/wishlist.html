@@ -1,0 +1,26 @@
+{% extends 'store/base.html' %}
+{% block title %}My Wishlist — ShopKart{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="page-header-inner">
+    <h1>My Wishlist</h1>
+    <p>{{ items.count }} saved item{% if items.count != 1 %}s{% endif %}</p>
+  </div>
+</div>
+<div class="section">
+  {% if items %}
+  <div class="product-grid">
+    {% for item in items %}
+    {% with product=item.product %}{% include 'store/product_card.html' %}{% endwith %}
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon">♡</div>
+    <div class="empty-title">Your wishlist is empty</div>
+    <div class="empty-sub">Save items you love by clicking the heart icon on any product.</div>
+    <a href="{% url 'product_list' %}" class="btn btn-dark">Explore Products</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

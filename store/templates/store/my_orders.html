@@ -1,0 +1,49 @@
+{% extends 'store/base.html' %}
+{% block title %}My Orders — ShopKart{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="page-header-inner">
+    <h1>My Orders</h1>
+    <p>{{ orders.count }} order{% if orders.count != 1 %}s{% endif %} placed</p>
+  </div>
+</div>
+<div class="section">
+  {% if orders %}
+    {% for order in orders %}
+    <div class="order-card">
+      <div class="order-header">
+        <div>
+          <div class="order-id">Order #{{ order.id }}</div>
+          <div class="order-date">{{ order.created_at|date:"d M Y, h:i A" }}</div>
+        </div>
+        <span class="status-badge status-{{ order.status }}">{{ order.get_status_display }}</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:16px">
+        {% for item in order.items.all %}
+        <div style="display:flex;align-items:center;gap:10px;background:var(--paper-warm);padding:10px;border-radius:var(--r);flex:1;min-width:200px">
+          {% if item.product.image_url %}
+          <img src="{{ item.product.image_url }}" alt="{{ item.product.name }}" style="width:48px;height:60px;object-fit:cover;border-radius:var(--r)">
+          {% endif %}
+          <div>
+            <div style="font-size:14px;font-weight:500">{{ item.product.name }}</div>
+            <div style="font-size:12px;color:var(--ink-muted)">Qty: {{ item.quantity }} × ₹{{ item.price }}</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);padding-top:14px">
+        <span style="font-size:14px;color:var(--ink-muted)">Delivered to: {{ order.address|truncatechars:60 }}</span>
+        <strong style="font-size:16px">₹{{ order.total_amount }}</strong>
+      </div>
+    </div>
+    {% endfor %}
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon">📦</div>
+    <div class="empty-title">No orders yet</div>
+    <div class="empty-sub">You haven't placed any orders. Start shopping!</div>
+    <a href="{% url 'product_list' %}" class="btn btn-dark">Shop Now</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

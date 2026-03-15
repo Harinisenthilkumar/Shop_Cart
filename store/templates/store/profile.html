@@ -1,0 +1,75 @@
+{% extends 'store/base.html' %}
+{% block title %}My Profile — ShopKart{% endblock %}
+{% block content %}
+<div class="section">
+  <div class="profile-grid">
+    <div class="profile-sidebar">
+      <div class="profile-avatar-section">
+        <div class="avatar-circle">{{ user.username|first|upper }}</div>
+        <div class="profile-name">{{ user.get_full_name|default:user.username }}</div>
+        <div class="profile-email">{{ user.email }}</div>
+      </div>
+      <nav class="profile-nav">
+        <a href="{% url 'profile' %}" class="active">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          My Profile
+        </a>
+        <a href="{% url 'my_orders' %}">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>
+          My Orders
+        </a>
+        <a href="{% url 'wishlist' %}">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          Wishlist ({{ wishlist_count }})
+        </a>
+        <a href="{% url 'logout' %}">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Sign Out
+        </a>
+      </nav>
+    </div>
+
+    <div>
+      <!-- Stats -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px">
+        <div style="background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);padding:20px;text-align:center">
+          <div style="font-size:28px;font-weight:600;font-family:var(--font-display)">{{ orders.count }}</div>
+          <div style="font-size:13px;color:var(--ink-muted);margin-top:4px">Orders</div>
+        </div>
+        <div style="background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);padding:20px;text-align:center">
+          <div style="font-size:28px;font-weight:600;font-family:var(--font-display)">{{ wishlist_count }}</div>
+          <div style="font-size:13px;color:var(--ink-muted);margin-top:4px">Wishlist</div>
+        </div>
+        <div style="background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);padding:20px;text-align:center">
+          <div style="font-size:28px;font-weight:600;font-family:var(--font-display)">{{ user.date_joined|date:"Y" }}</div>
+          <div style="font-size:13px;color:var(--ink-muted);margin-top:4px">Member Since</div>
+        </div>
+      </div>
+
+      <!-- Recent Orders -->
+      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);padding:24px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+          <h2 style="font-family:var(--font-display);font-size:20px">Recent Orders</h2>
+          <a href="{% url 'my_orders' %}" class="view-all">View All →</a>
+        </div>
+        {% if orders %}
+          {% for order in orders %}
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--border)">
+            <div>
+              <div style="font-weight:500;font-size:14px">Order #{{ order.id }}</div>
+              <div style="font-size:12px;color:var(--ink-muted);margin-top:2px">{{ order.created_at|date:"d M Y" }} · {{ order.items.count }} item{% if order.items.count != 1 %}s{% endif %}</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px">
+              <span class="status-badge status-{{ order.status }}">{{ order.get_status_display }}</span>
+              <strong>₹{{ order.total_amount }}</strong>
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+        <p style="color:var(--ink-muted);text-align:center;padding:24px 0">No orders yet.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

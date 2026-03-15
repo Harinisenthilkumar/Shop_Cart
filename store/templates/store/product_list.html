@@ -1,0 +1,74 @@
+{% extends 'store/base.html' %}
+
+{% block title %}{% if selected_category %}{{ selected_category.name }}{% else %}All Products{% endif %} — ShopKart{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-header-inner">
+    <h1>{% if selected_category %}{{ selected_category.name }}{% elif search %}Results for "{{ search }}"{% else %}All Products{% endif %}</h1>
+    <p>{{ products.count }} products found</p>
+  </div>
+</div>
+
+<div class="section">
+  <div class="page-layout">
+
+    <!-- Sidebar Filters -->
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-title">Categories</div>
+        <a href="{% url 'product_list' %}" class="filter-option {% if not selected_category %}active{% endif %}">All Categories</a>
+        {% for cat in categories %}
+        <a href="{% url 'product_list' %}?category={{ cat.slug }}" class="filter-option {% if selected_category.slug == cat.slug %}active{% endif %}">{{ cat.name }}</a>
+        {% endfor %}
+      </div>
+
+      <form method="get" action="{% url 'product_list' %}">
+        {% if selected_category %}<input type="hidden" name="category" value="{{ selected_category.slug }}">{% endif %}
+        {% if search %}<input type="hidden" name="q" value="{{ search }}">{% endif %}
+        <div class="sidebar-section">
+          <div class="sidebar-title">Price Range (₹)</div>
+          <div class="price-range">
+            <input type="number" name="min_price" class="price-input" placeholder="Min" value="{{ request.GET.min_price }}">
+            <span style="color:var(--ink-muted)">–</span>
+            <input type="number" name="max_price" class="price-input" placeholder="Max" value="{{ request.GET.max_price }}">
+          </div>
+          <button type="submit" class="btn btn-dark btn-sm btn-full" style="margin-top:12px">Apply Filter</button>
+        </div>
+      </form>
+    </aside>
+
+    <!-- Products -->
+    <div>
+      <div class="toolbar">
+        <span class="toolbar-count">{{ products.count }} products</span>
+        <div class="toolbar-sort">
+          <form method="get">
+            {% if selected_category %}<input type="hidden" name="category" value="{{ selected_category.slug }}">{% endif %}
+            {% if search %}<input type="hidden" name="q" value="{{ search }}">{% endif %}
+            <select name="sort" onchange="this.form.submit()">
+              <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Newest First</option>
+              <option value="price_low" {% if sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+              <option value="price_high" {% if sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+              <option value="rating" {% if sort == 'rating' %}selected{% endif %}>Top Rated</option>
+            </select>
+          </form>
+        </div>
+      </div>
+
+      {% if products %}
+      <div class="product-grid">
+        {% for product in products %}{% include 'store/product_card.html' %}{% endfor %}
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <div class="empty-icon">🔍</div>
+        <div class="empty-title">No products found</div>
+        <div class="empty-sub">Try adjusting your filters or search terms.</div>
+        <a href="{% url 'product_list' %}" class="btn btn-dark">Clear Filters</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

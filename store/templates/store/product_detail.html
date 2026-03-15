@@ -1,0 +1,170 @@
+{% extends 'store/base.html' %}
+
+{% block title %}{{ product.name }} — ShopKart{% endblock %}
+
+{% block content %}
+<div class="section">
+  <div class="breadcrumb">
+    <a href="{% url 'home' %}">Home</a>
+    <span class="breadcrumb-sep">›</span>
+    <a href="{% url 'product_list' %}">Products</a>
+    <span class="breadcrumb-sep">›</span>
+    <a href="{% url 'product_list' %}?category={{ product.category.slug }}">{{ product.category.name }}</a>
+    <span class="breadcrumb-sep">›</span>
+    <span>{{ product.name }}</span>
+  </div>
+
+  <div class="detail-grid">
+    <!-- Images -->
+    <div class="detail-images">
+      <div class="main-image">
+        {% if product.image_url %}
+          <img src="{{ product.image_url }}" alt="{{ product.name }}">
+        {% else %}
+          <img src="https://via.placeholder.com/600x800/f4f1ec/888?text={{ product.name|urlencode }}" alt="{{ product.name }}">
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Info -->
+    <div class="detail-info">
+      <p class="detail-brand">{{ product.brand|default:product.category.name }}</p>
+      <h1 class="detail-name">{{ product.name }}</h1>
+
+      <div class="detail-rating">
+        <span class="stars" style="font-size:16px">{% for i in "12345" %}{% if forloop.counter <= product.rating %}★{% else %}☆{% endif %}{% endfor %}</span>
+        <strong>{{ product.rating }}</strong>
+        <span>({{ product.reviews_count }} reviews)</span>
+      </div>
+
+      <div class="detail-price">
+        <div class="product-price">
+          <span class="price-current">₹{{ product.price }}</span>
+          {% if product.original_price %}<span class="price-original">₹{{ product.original_price }}</span>{% endif %}
+          {% if product.discount_percent %}<span class="price-discount">{{ product.discount_percent }}% off</span>{% endif %}
+        </div>
+        {% if product.discount_percent %}<p style="font-size:13px;color:var(--success);margin-top:6px">You save ₹{{ product.original_price|floatformat:0 }} off MRP</p>{% endif %}
+      </div>
+
+      <p class="detail-desc">{{ product.description }}</p>
+
+      <!-- Size Selection -->
+      <div class="size-select">
+        <div class="size-label">Select Size</div>
+        <div class="size-options">
+          {% for size in size_list %}
+          <button type="button" class="size-btn {% if forloop.first %}selected{% endif %}" data-size="{{ size }}">{{ size }}</button>
+          {% endfor %}
+        </div>
+      </div>
+
+      <form method="post" action="{% url 'add_to_cart' product.id %}">
+        {% csrf_token %}
+        <input type="hidden" name="size" id="selected-size" value="XS">
+        <div class="detail-actions">
+          <button type="submit" class="btn btn-accent" style="font-size:15px;padding:15px 24px">Add to Bag</button>
+          <button type="button" class="btn-wish {% if in_wishlist %}active{% endif %}" data-wishlist="{{ product.id }}">
+            {% if in_wishlist %}♥{% else %}♡{% endif %}
+          </button>
+        </div>
+      </form>
+
+      <!-- Meta -->
+      <div class="detail-meta">
+        <div class="meta-row"><span>Category</span><span>{{ product.category.name }}</span></div>
+        <div class="meta-row"><span>Brand</span><span>{{ product.brand|default:"ShopKart" }}</span></div>
+        <div class="meta-row"><span>Stock</span><span>{% if product.stock > 0 %}In Stock ({{ product.stock }} left){% else %}Out of Stock{% endif %}</span></div>
+        <div class="meta-row"><span>Delivery</span><span>Free delivery on orders above ₹999</span></div>
+        <div class="meta-row"><span>Returns</span><span>30-day easy returns</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Related Products -->
+  {% if related %}
+  <div style="margin-top:72px">
+    <div class="section-header">
+      <div><h2 class="section-title">You May <span>Also Like</span></h2></div>
+      <a href="{% url 'product_list' %}?category={{ product.category.slug }}" class="view-all">View All →</a>
+    </div>
+    <div class="product-grid">
+      {% for p in related %}{% with product=p %}{% include 'store/product_card.html' %}{% endwith %}{% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Reviews -->
+  <div class="reviews-section">
+    <h2 class="section-title" style="margin-bottom:24px">Customer <span>Reviews</span></h2>
+
+    {% if reviews %}
+      {% for review in reviews %}
+      <div class="review-card">
+        <div class="review-header">
+          <div>
+            <div class="reviewer-name">{{ review.user.username }}</div>
+            <div class="stars">{% for i in "12345" %}{% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}{% endfor %}</div>
+          </div>
+          <span class="review-date">{{ review.created_at|date:"d M Y" }}</span>
+        </div>
+        <p class="review-text">{{ review.comment }}</p>
+      </div>
+      {% endfor %}
+    {% else %}
+      <p style="color:var(--ink-muted);margin-bottom:24px">No reviews yet. Be the first!</p>
+    {% endif %}
+
+    {% if user.is_authenticated %}
+    <div class="review-form">
+      <h3 style="font-family:var(--font-display);font-size:20px;margin-bottom:16px">Write a Review</h3>
+      <form method="post">
+        {% csrf_token %}
+        <div style="margin-bottom:16px">
+          <div class="size-label">Your Rating</div>
+          <div class="star-select">
+            {% for i in "12345" %}
+            <span class="star-label" data-val="{{ forloop.counter }}" style="font-size:28px;cursor:pointer;color:var(--border)">★</span>
+            {% endfor %}
+          </div>
+          <input type="hidden" name="rating" value="5">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Your Review</label>
+          <textarea name="comment" class="form-control" rows="4" placeholder="Share your experience with this product..." required></textarea>
+        </div>
+        <button type="submit" class="btn btn-dark">Submit Review</button>
+      </form>
+    </div>
+    {% else %}
+    <div class="alert alert-info"><a href="{% url 'login' %}" style="font-weight:600">Sign in</a> to write a review.</div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('.size-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.getElementById('selected-size').value = this.dataset.size;
+  });
+});
+// Star hover
+const stars = document.querySelectorAll('.star-label');
+stars.forEach((star, idx) => {
+  star.addEventListener('mouseenter', () => {
+    stars.forEach((s, i) => s.style.color = i <= idx ? 'var(--gold)' : 'var(--border)');
+  });
+  star.addEventListener('mouseleave', () => {
+    const val = parseInt(document.querySelector('[name=rating]').value);
+    stars.forEach((s, i) => s.style.color = i < val ? 'var(--gold)' : 'var(--border)');
+  });
+  star.addEventListener('click', () => {
+    document.querySelector('[name=rating]').value = idx + 1;
+  });
+});
+// Init stars at 5
+stars.forEach(s => s.style.color = 'var(--gold)');
+</script>
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Your Shopping Bag — ShopKart{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-header-inner">
+    <h1>Shopping Bag</h1>
+    <p>{{ cart.item_count }} item{% if cart.item_count != 1 %}s{% endif %} in your bag</p>
+  </div>
+</div>
+
+<div class="section">
+  {% if cart.items.all %}
+  <div class="cart-layout">
+    <div class="cart-items">
+      {% for item in cart.items.all %}
+      <div class="cart-item">
+        <div class="cart-item-img">
+          {% if item.product.image_url %}
+            <img src="{{ item.product.image_url }}" alt="{{ item.product.name }}">
+          {% else %}
+            <img src="https://via.placeholder.com/200x260/f4f1ec/888" alt="{{ item.product.name }}">
+          {% endif %}
+        </div>
+        <div>
+          <div class="cart-item-brand">{{ item.product.brand|default:item.product.category.name }}</div>
+          <div class="cart-item-name">{{ item.product.name }}</div>
+          {% if item.size %}<p style="font-size:13px;color:var(--ink-muted);margin-bottom:12px">Size: {{ item.size }}</p>{% endif %}
+          <div class="qty-control">
+            <form method="post" action="{% url 'update_cart' item.id %}" style="display:inline">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="decrease">
+              <button type="submit" class="qty-btn">−</button>
+            </form>
+            <span class="qty-val">{{ item.quantity }}</span>
+            <form method="post" action="{% url 'update_cart' item.id %}" style="display:inline">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="increase">
+              <button type="submit" class="qty-btn">+</button>
+            </form>
+          </div>
+          <form method="post" action="{% url 'update_cart' item.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="remove">
+            <button type="submit" class="remove-btn">Remove</button>
+          </form>
+        </div>
+        <div>
+          <div class="cart-item-price">₹{{ item.subtotal }}</div>
+          {% if item.product.original_price %}<div style="font-size:12px;color:var(--ink-muted);text-decoration:line-through;text-align:right">₹{{ item.product.original_price }}</div>{% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Order Summary -->
+    <div class="order-summary">
+      <div class="summary-title">Order Summary</div>
+      <div class="summary-row"><span>Subtotal</span><span>₹{{ cart.total }}</span></div>
+      <div class="summary-row"><span>Delivery</span><span>{% if cart.total >= 999 %}<span style="color:var(--success)">FREE</span>{% else %}₹99{% endif %}</span></div>
+      <div class="summary-row total">
+        <span>Total</span>
+        <span>₹{% if cart.total >= 999 %}{{ cart.total }}{% else %}{{ cart.total|add:99 }}{% endif %}</span>
+      </div>
+      {% if user.is_authenticated %}
+        <a href="{% url 'checkout' %}" class="btn btn-accent btn-full" style="margin-top:16px">Proceed to Checkout →</a>
+      {% else %}
+        <a href="{% url 'login' %}?next={% url 'checkout' %}" class="btn btn-accent btn-full" style="margin-top:16px">Sign In to Checkout →</a>
+      {% endif %}
+      <div class="coupon-form">
+        <input type="text" placeholder="Coupon code">
+        <button class="btn btn-dark btn-sm">Apply</button>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px">
+        <span style="font-size:11px;color:var(--ink-muted)">🔒 Secure checkout &nbsp; ↩️ Easy returns &nbsp; ✓ Genuine products</span>
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon">🛍️</div>
+    <div class="empty-title">Your bag is empty</div>
+    <div class="empty-sub">Looks like you haven't added anything to your bag yet.</div>
+    <a href="{% url 'product_list' %}" class="btn btn-dark">Start Shopping</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

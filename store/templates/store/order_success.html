@@ -1,0 +1,21 @@
+{% extends 'store/base.html' %}
+{% block title %}Order Placed! — ShopKart{% endblock %}
+{% block content %}
+<div class="section">
+  <div class="success-page">
+    <div class="success-icon">🎉</div>
+    <h1 class="success-title">Order Placed!</h1>
+    <p class="success-sub">Your order <strong>#{{ order.id }}</strong> has been confirmed. We'll send you a confirmation shortly.</p>
+    <div style="background:var(--paper-warm);border-radius:var(--r-lg);padding:24px;margin-bottom:32px;text-align:left">
+      <div class="summary-row" style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px"><span style="color:var(--ink-muted)">Order ID</span><strong>#{{ order.id }}</strong></div>
+      <div class="summary-row" style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px"><span style="color:var(--ink-muted)">Status</span><span class="status-badge status-confirmed">{{ order.get_status_display }}</span></div>
+      <div class="summary-row" style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px"><span style="color:var(--ink-muted)">Total</span><strong>₹{{ order.total_amount }}</strong></div>
+      <div class="summary-row" style="display:flex;justify-content:space-between;padding:10px 0;font-size:14px"><span style="color:var(--ink-muted)">Delivery Address</span><span style="text-align:right;max-width:220px">{{ order.address }}</span></div>
+    </div>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <a href="{% url 'my_orders' %}" class="btn btn-dark">View My Orders</a>
+      <a href="{% url 'home' %}" class="btn btn-outline" style="color:var(--ink);border-color:var(--border)">Continue Shopping</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

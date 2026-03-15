@@ -1,0 +1,34 @@
+{% load static %}
+<div class="product-card">
+  <div class="product-img-wrap">
+    <a href="{% url 'product_detail' product.slug %}">
+      {% if product.image_url %}
+        <img src="{{ product.image_url }}" alt="{{ product.name }}" loading="lazy">
+      {% else %}
+        <img src="https://via.placeholder.com/400x530/f4f1ec/888?text={{ product.name|urlencode }}" alt="{{ product.name }}">
+      {% endif %}
+    </a>
+    <div class="product-badges">
+      {% if product.discount_percent %}<span class="badge badge-sale">-{{ product.discount_percent }}%</span>{% endif %}
+      {% if product.is_new %}<span class="badge badge-new">New</span>{% endif %}
+      {% if product.reviews_count > 500 %}<span class="badge badge-hot">Hot</span>{% endif %}
+    </div>
+    <button class="product-wishlist {% if request.user.is_authenticated %}{% endif %}" data-wishlist="{{ product.id }}" title="Add to Wishlist">♡</button>
+    <button class="product-quick-add" data-add-cart="{{ product.id }}">+ Quick Add</button>
+  </div>
+  <div class="product-info">
+    {% if product.brand %}<div class="product-brand">{{ product.brand }}</div>{% endif %}
+    <a href="{% url 'product_detail' product.slug %}">
+      <div class="product-name">{{ product.name }}</div>
+    </a>
+    <div class="product-rating">
+      <span class="stars">{% for i in "12345" %}{% if forloop.counter <= product.rating %}★{% else %}☆{% endif %}{% endfor %}</span>
+      <span class="rating-count">({{ product.reviews_count }})</span>
+    </div>
+    <div class="product-price">
+      <span class="price-current">₹{{ product.price }}</span>
+      {% if product.original_price %}<span class="price-original">₹{{ product.original_price }}</span>{% endif %}
+      {% if product.discount_percent %}<span class="price-discount">{{ product.discount_percent }}% off</span>{% endif %}
+    </div>
+  </div>
+</div>

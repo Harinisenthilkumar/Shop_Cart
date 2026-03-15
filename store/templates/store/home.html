@@ -1,0 +1,120 @@
+{% extends 'store/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-content">
+    <p class="hero-eyebrow">New Season — Summer 2025</p>
+    <h1 class="hero-title">Style that speaks <em>your</em> language</h1>
+    <p class="hero-sub">Discover thousands of styles from India's top fashion brands. Free delivery, easy returns.</p>
+    <div class="hero-actions">
+      <a href="{% url 'product_list' %}" class="btn btn-accent">Shop Now</a>
+      <a href="{% url 'product_list' %}?category=women" class="btn btn-outline">Women's Edit</a>
+    </div>
+  </div>
+  <div class="hero-image">
+    <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80" alt="Fashion">
+    <div class="hero-badge">Up to 70% Off</div>
+  </div>
+</section>
+
+<!-- Stats bar -->
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div class="stat-item"><span class="stat-icon">🚚</span><span class="stat-text"><strong>Free Delivery</strong> on orders over ₹999</span></div>
+    <div class="stat-item"><span class="stat-icon">↩️</span><span class="stat-text"><strong>Easy Returns</strong> within 30 days</span></div>
+    <div class="stat-item"><span class="stat-icon">🔒</span><span class="stat-text"><strong>Secure Payments</strong> 100% protected</span></div>
+    <div class="stat-item"><span class="stat-icon">⭐</span><span class="stat-text"><strong>50 Lakh+</strong> happy customers</span></div>
+  </div>
+</div>
+
+<!-- Categories -->
+<div class="categories-strip">
+  <div class="categories-inner">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title" style="color:#fff">Shop by <em>Category</em></h2>
+        <p class="section-subtitle">Find exactly what you're looking for</p>
+      </div>
+    </div>
+    <div class="categories-grid">
+      {% for cat in categories %}
+      <a href="{% url 'product_list' %}?category={{ cat.slug }}" class="category-card">
+        <div class="cat-icon">{{ cat.icon }}</div>
+        <div class="cat-name">{{ cat.name }}</div>
+      </a>
+      {% empty %}
+      <a href="{% url 'product_list' %}?category=men" class="category-card"><div class="cat-icon">👔</div><div class="cat-name">Men</div></a>
+      <a href="{% url 'product_list' %}?category=women" class="category-card"><div class="cat-icon">👗</div><div class="cat-name">Women</div></a>
+      <a href="{% url 'product_list' %}?category=footwear" class="category-card"><div class="cat-icon">👟</div><div class="cat-name">Footwear</div></a>
+      <a href="{% url 'product_list' %}?category=accessories" class="category-card"><div class="cat-icon">👜</div><div class="cat-name">Accessories</div></a>
+      <a href="{% url 'product_list' %}?category=electronics" class="category-card"><div class="cat-icon">📱</div><div class="cat-name">Electronics</div></a>
+      <a href="{% url 'product_list' %}?category=sports" class="category-card"><div class="cat-icon">🏃</div><div class="cat-name">Sports</div></a>
+      <a href="{% url 'product_list' %}?category=beauty" class="category-card"><div class="cat-icon">💄</div><div class="cat-name">Beauty</div></a>
+      <a href="{% url 'product_list' %}?category=kids" class="category-card"><div class="cat-icon">🧸</div><div class="cat-name">Kids</div></a>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<!-- Featured Products -->
+{% if featured %}
+<div class="section">
+  <div class="section-header">
+    <div>
+      <h2 class="section-title">Featured <span>Picks</span></h2>
+      <p class="section-subtitle">Handpicked styles for you</p>
+    </div>
+    <a href="{% url 'product_list' %}" class="view-all">View All →</a>
+  </div>
+  <div class="product-grid">
+    {% for product in featured %}{% include 'store/product_card.html' %}{% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<!-- Promo Banner -->
+<div class="promo-banner">
+  <div>
+    <p class="promo-eyebrow">Limited Time Offer</p>
+    <h2 class="promo-title">Summer Sale is Live!</h2>
+    <p class="promo-sub">Up to 70% off on thousands of styles.</p>
+  </div>
+  <a href="{% url 'product_list' %}" class="btn btn-light">Shop the Sale →</a>
+</div>
+
+<!-- Trending -->
+{% if trending %}
+<div class="section">
+  <div class="section-header">
+    <div>
+      <h2 class="section-title">Trending <span>Now</span></h2>
+      <p class="section-subtitle">What everyone's buying</p>
+    </div>
+    <a href="{% url 'product_list' %}?sort=rating" class="view-all">View All →</a>
+  </div>
+  <div class="product-grid">
+    {% for product in trending %}{% include 'store/product_card.html' %}{% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<!-- New Arrivals -->
+{% if new_arrivals %}
+<div class="section" style="padding-top:0">
+  <div class="section-header">
+    <div>
+      <h2 class="section-title">New <span>Arrivals</span></h2>
+      <p class="section-subtitle">Fresh drops this week</p>
+    </div>
+    <a href="{% url 'product_list' %}?sort=newest" class="view-all">View All →</a>
+  </div>
+  <div class="product-grid">
+    {% for product in new_arrivals %}{% include 'store/product_card.html' %}{% endfor %}
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}
