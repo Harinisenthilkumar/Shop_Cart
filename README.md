@@ -122,22 +122,4 @@ shopkart/
 │       └── js/main.js
 ├── manage.py
 └── requirements.txt
-```
 
----
-
-## LinkedIn Post Suggestion
-
-> Built a full-stack e-commerce website using Python + Django from scratch — similar to Myntra/Meesho.
-> Features: product catalog, cart, wishlist, checkout, order tracking, user auth, admin panel.
-> Tech: Django 5, SQLite, HTML/CSS/JS, Google Fonts.
-> GitHub: [link] | Live Demo: [link]
-
----
-
-## Deploy to Railway (Free)
-
-1. Push code to GitHub
-2. Go to railway.app → New Project → Deploy from GitHub
-3. Add env variable: `DJANGO_SETTINGS_MODULE=shopkart.settings`
-4. Done — live URL in 2 minutes!
